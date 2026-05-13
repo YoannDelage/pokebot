@@ -1,0 +1,44 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+
+# ML / expériences locales
+mlruns/
+.mlflow/
+models/
+
+# Trop volumineux pour GitHub (>100 Mo)
+json/replays_phase0.json
+
+# Outils / IDE
+.claude/
+.idea/
+.vscode/
+
+# pokemon-showdown — dépendances (réinstaller avec npm ci / npm install)
+pokemon-showdown/node_modules/
+
+# === Gen 9 — tentative d'adaptation non finalisée ===
+# Conservée localement comme MVP mais exclue du dépôt :
+# la complexité (talents, objets cachés, Téracristal, méta vivant) dépasse
+# les moyens d'un projet individuel. Voir le README pour les détails.
+Gen9/
+
+# Ancien dossier Gen1/ (contenus déplacés à la racine).
+# Le sous-dossier notebooks/ peut être verrouillé par l'IDE — supprimer
+# manuellement après fermeture du fichier.
+Gen1/
+
+# Artefacts résiduels Gen 9 (au cas où ils traînent à la racine)
+evolution_performances_9g.png
+env_9g.py
+env_9g_v2.py
+env_9g_extract.txt
+observations_combats_ladder.txt
+temp_validate_env.py
