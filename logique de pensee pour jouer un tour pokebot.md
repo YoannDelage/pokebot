@@ -2,7 +2,7 @@
 
 ---
 
-## 🏗️ Vue d'ensemble de l'architecture
+## Vue d'ensemble de l'architecture
 
 ```
 ┌─────────────────────────────────────────────────────┐
@@ -251,11 +251,11 @@ features["opp_tera_used"] = float(battle.opponent_active_pokemon.terastallized)
 
 ---
 
-## COUCHE 3 — Reward Shaping (Signal d'apprentissage stratégique)
+## COUCHE 3 — Reward Shaping (Signal d'apprentissage stratégique, récompense du modele)
 
 Le reward final = `reward_victoire + Σ reward_intermédiaires`
 
-### 3.1 — Structure du reward
+### 3.1 — Structure récompense
 
 ```python
 def compute_shaped_reward(battle: Battle, prev_battle: Battle) -> float:
@@ -285,7 +285,7 @@ def compute_shaped_reward(battle: Battle, prev_battle: Battle) -> float:
         prev_battle.opponent_active_pokemon.status is None):
         reward += 0.5
 
-    # Setup réussi (boost obtenu sans être puni)
+    # Setup réussi (boost obtenu wipe instant > build momentum)
     our_boost_delta = sum_boosts(battle.active_pokemon) - sum_boosts(prev_battle.active_pokemon)
     if our_boost_delta > 0 and not was_punished(battle, prev_battle):
         reward += our_boost_delta * 0.3
@@ -348,7 +348,7 @@ def momentum_reward(battle, prev_battle) -> float:
 
 ---
 
-## 🔗 Intégration dans ton Player poke-env
+## 🔗 Intégration dans le Player poke-env
 
 ```python
 class HybridPPOPlayer(Gen9EnvSinglePlayer):
@@ -385,10 +385,10 @@ class HybridPPOPlayer(Gen9EnvSinglePlayer):
 
 ---
 
-## 📊 Ordre de priorité des couches au runtime
+## Ordre de priorité des couches au runtime
 
 ```
-Tour reçu
+Tour du bot
     │
     ▼
 [HEURISTIQUE] ──── KO dispo ?  ──── OUI ──► Jouer le KO
@@ -409,18 +409,3 @@ Tour reçu
               [REWARD] calculé après le tour
               (signal shaped pour renforcer la stratégie)
 ```
-
----
-
-## 🗺️ Roadmap d'implémentation suggérée
-
-| Phase | Ce qu'on ajoute | Impact attendu |
-|---|---|---|
-| 1 | Action masking (immunités + PP) | Supprime les erreurs grossières |
-| 2 | Features vitesse + menace immédiate | PPO comprend l'urgence |
-| 3 | Reward KO infligé/subi | Oriente vers l'offensif |
-| 4 | Features moves + type multiplier | Comprend les matchups |
-| 5 | Heuristique KO override | Fiabilise les wins évidentes |
-| 6 | Features terrain/météo/hazards | Comprend le meta-game |
-| 7 | Reward shaping complet | Apprentissage stratégique profond |
-| 8 | Switch scoring comme feature | Switche intelligemment |
