@@ -16,14 +16,14 @@
     "better-sqlite3": "^11.10.0",
     "cloud-env": "^0.2.3",
     "githubhook": "^1.9.3",
-    "nodemailer": "^7.0.5",
+    "nodemailer": "^8.0.5",
     "permessage-deflate": "^0.1.7",
     "pg": "^8.16.3",
     "probe-image-size": "^7.2.3",
     "source-map-support": "^0.5.21",
     "sql-template-strings": "^2.2.2",
     "sqlite": "^5.1.1",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^6.0.1"
   },
   "secretDependencies": {
     "node-oom-heapdump": "^1.2.0"
