@@ -28,14 +28,16 @@ Avant de plonger dans la technique, posons les bases.
 
 ### Un combat Pokémon en chiffres
 
-| Élément | Ordre de grandeur |
-|---|---|
-| Pokémon existants (Gen 9) | ~1 000 |
-| Moves différents | ~900 |
-| Talents (abilities) | ~300 |
-| Objets tenus | ~100 |
-| Types (et combinaisons) | 18 types, ~170 combinaisons |
-| Conditions de terrain | 5 météos, 5 champs, hazards multiples |
+
+| Élément                   | Ordre de grandeur                     |
+| ------------------------- | ------------------------------------- |
+| Pokémon existants (Gen 9) | ~1 000                                |
+| Moves différents          | ~900                                  |
+| Talents (abilities)       | ~300                                  |
+| Objets tenus              | ~100                                  |
+| Types (et combinaisons)   | 18 types, ~170 combinaisons           |
+| Conditions de terrain     | 5 météos, 5 champs, hazards multiples |
+
 
 À chaque tour, le joueur fait face à un choix **parmi 9 actions valides en moyenne** (4 moves + 5 switches), mais **chaque choix dépend de centaines de paramètres** : type de l'adversaire, ses boosts, son statut, l'état de ton équipe, les hazards (effets de status entre autres) posés, les screens actifs, etc.
 
@@ -79,12 +81,14 @@ Le bot Gen 1 est évalué après chaque phase du curriculum sur 30 à 100 combat
 
 Les courbes complètes sont dans `evolution_performances.png` (généré par le notebook) et tous les runs sont historisés dans `mlruns/` (consultables via `mlflow ui`).
 
-| Phase | Steps | Winrate vs Random | Winrate vs MaxBasePower |
-|---|---|---|---|
-| Phase 0 — Imitation (BC sur replays ELO ≥ 1200) | ~5 k | ~50 % | ~20 % |
-| Phase 1 — vs Random | 20 k | ~85 % | ~30 % |
-| Phase 2 — vs MaxBasePower | 200 k | ~95 % | ~60 % |
-| Phase 3 — Self-Play | 1 M | ~98 % | ~75 % |
+
+| Phase                                           | Steps | Winrate vs Random | Winrate vs MaxBasePower |
+| ----------------------------------------------- | ----- | ----------------- | ----------------------- |
+| Phase 0 — Imitation (BC sur replays ELO ≥ 1200) | ~5 k  | ~50 %             | ~20 %                   |
+| Phase 1 — vs Random                             | 20 k  | ~85 %             | ~30 %                   |
+| Phase 2 — vs MaxBasePower                       | 200 k | ~95 %             | ~60 %                   |
+| Phase 3 — Self-Play                             | 1 M   | ~98 %             | ~75 %                   |
+
 
 > Ces valeurs sont indicatives et peuvent varier selon la seed et la durée d'entraînement. Le notebook MLflow conserve la trace exacte de chaque run.
 
@@ -116,15 +120,15 @@ Le projet combine trois couches qu'on retrouve communes aux deux branches :
 └──────────────────────────────────────────────────────────┘
 ```
 
-Détail complet dans [`logique de pensee pour jouer un tour pokebot.md`](./logique%20de%20pensee%20pour%20jouer%20un%20tour%20pokebot.md).
+Détail complet dans `[logique de pensee pour jouer un tour pokebot.md](./logique%20de%20pensee%20pour%20jouer%20un%20tour%20pokebot.md)`.
 
 ### Stack technique
 
-- **`poke-env`** — interface Python pour Pokémon Showdown (PettingZoo)
-- **`Stable-Baselines3` + `sb3-contrib`** — algorithme **MaskablePPO** (PPO avec action masking)
-- **`Gymnasium`** — wrapper pour adapter PettingZoo → SB3 single-agent
-- **`PyTorch`** — backend du réseau de neurones
-- **`MLflow`** — suivi des hyperparamètres, métriques et artefacts
+- `**poke-env**` — interface Python pour Pokémon Showdown (PettingZoo)
+- `**Stable-Baselines3` + `sb3-contrib**` — algorithme **MaskablePPO** (PPO avec action masking)
+- `**Gymnasium`** — wrapper pour adapter PettingZoo → SB3 single-agent
+- `**PyTorch**` — backend du réseau de neurones
+- `**MLflow**` — suivi des hyperparamètres, métriques et artefacts
 - **Pokémon Showdown (serveur Node.js local)** — moteur de combat utilisé pour le projet (et par beaucoup de joueurs competitifs)]
 
 ### Le modèle choisi — MaskablePPO
@@ -137,12 +141,14 @@ L'idée centrale de PPO est de **limiter la taille des mises à jour de la polit
 
 #### Alternatives écartées
 
-| Algorithme | Pourquoi écarté |
-|---|---|
-| **DQN** | Mal adapté aux espaces d'actions partiellement valides ; le Q-learning ne gère pas naturellement l'action masking et nécessite beaucoup d'astuces pour fonctionner. |
-| **A3C / A2C** | Moins stable que PPO, et le gain de parallélisme natif est annulé par le coût du multi-threading sur la simulation Showdown. |
-| **SAC** | Conçu pour les actions continues, pas adapté à notre espace discret (move/switch). |
+
+| Algorithme             | Pourquoi écarté                                                                                                                                                                                                                                                                |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **DQN**                | Mal adapté aux espaces d'actions partiellement valides ; le Q-learning ne gère pas naturellement l'action masking et nécessite beaucoup d'astuces pour fonctionner.                                                                                                            |
+| **A3C / A2C**          | Moins stable que PPO, et le gain de parallélisme natif est annulé par le coût du multi-threading sur la simulation Showdown.                                                                                                                                                   |
+| **SAC**                | Conçu pour les actions continues, pas adapté à notre espace discret (move/switch).                                                                                                                                                                                             |
 | **MuZero / AlphaZero** | Idéaux pour des jeux à information parfaite (échecs, Go). Inapplicables ici : Pokémon est à information **partielle** (équipe adverse cachée), et l'apprentissage par MCTS suppose de pouvoir simuler le futur — ce qui est impossible quand on ne connait pas l'état complet. |
+
 
 ### Curriculum d'entraînement
 
@@ -234,6 +240,7 @@ jupyter notebook notebooks/pokebot.ipynb
 ```
 
 Puis exécuter les cellules dans l'ordre :
+
 1. Imports et définition de l'environnement
 2. Wrapper Gymnasium + factory des envs parallèles
 3. Configuration MLflow
@@ -266,4 +273,3 @@ Au-delà du code et de la documentation, ce projet a confirmé deux choses :
 Le bot Gen 1 me sert maintenant exactement comme prévu : **un sparring partner toujours disponible**, qui ne se vexe pas quand je perds 10 fois d'affilée et qui m'aide à comprendre *pourquoi* je perds.
 
 A defaut d'etre devenu un stratege hors pair (parce que je perds encore **beaucoup**), j'ai pris enormement de plaisir a construire ce projet, c'est déjà une belle victoire.
-
